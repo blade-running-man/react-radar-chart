@@ -1,14 +1,17 @@
 {
-    "name": "react line chart",
+    "name": "react radar chart",
     "description": "",
     "version": "0.0.1",
     "scripts": {},
     "pre-commit": [],
-    "dependencies": {},
+    "dependencies": {
+      "@types/react": "^16.9.2",
+      "react": "^16.9.0"
+    },
     "devDependencies": {},
     "main": "",
-    "repository": "blade_running_man/react-line-chart",
-    "homepage": "github.com/blade_running_man/react-line-chart",
+    "repository": "blade_running_man/react-radar-chart",
+    "homepage": "github.com/blade_running_man/react-radar-chart",
     "keywords": [],
     "author": {
       "name": "Oleksandr Slukovskyi",
@@ -16,7 +19,7 @@
       "url": "github.com/blade_running_man"
     },
     "bugs": {
-      "url": "https://github.com/blade_running_man/react-line-chart/issues",
+      "url": "https://github.com/blade_running_man/react-radar-chart/issues",
       "email": "oleksandr.slukovskyi@gmail.com"
     },
     "license": "MIT"
