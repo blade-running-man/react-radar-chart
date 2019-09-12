@@ -25,9 +25,10 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
     return `-${captionMargin} 0 ${chartSize + captionMargin * 2} ${chartSize}`;
   };
 
+  polarToX = (angle: number, distance: number) => Math.cos(angle - Math.PI / 2) * distance;
+  polarToY = (angle: number, distance: number) => Math.sin(angle - Math.PI / 2) * distance;
+
   pathDefinition = (points:any) => {
-    console.log(points)
-    console.log('points.length', points.length)
 
     let d = 'M' + points[0][0].toFixed(4) + ',' + points[0][1].toFixed(4);
     for (let i = 1; i < points.length; i++) {
@@ -39,8 +40,6 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   shape = (columns:any) => (chartData: any, i: any) => {
     const { chartSize } = this.props;
     const data = chartData;
-    const polarToX = (angle: number, distance: number) => Math.cos(angle - Math.PI / 2) * distance;
-    const polarToY = (angle: number, distance: number) => Math.sin(angle - Math.PI / 2) * distance;
     return (
       <path
         key={`shape-${i}`}
@@ -48,8 +47,8 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
           columns.map((col:any) => {
             const value = data[col.key];
             return [
-              polarToX(col.angle, (value * chartSize) / 2),
-              polarToY(col.angle, (value * chartSize) / 2)
+              this.polarToX(col.angle, (value * chartSize) / 2),
+              this.polarToY(col.angle, (value * chartSize) / 2)
             ];
           })
         )}
@@ -63,9 +62,6 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   getCoordinatesUnity = () => {
     const { chartSize, headers } = this.props;
 
-    const polarToX = (angle: number, distance: number) => Math.cos(angle - Math.PI / 2) * distance;
-    const polarToY = (angle: number, distance: number) => Math.sin(angle - Math.PI / 2) * distance;
-
     const captionsData = headers.map((key: any, i:any, all:any) => {
       return {
         key: i,
@@ -75,7 +71,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
     })
 
     return captionsData.reduce((accumulator, currVal) => {
-      return `${accumulator}${polarToX(currVal.angle, chartSize / 2)},${polarToY(currVal.angle, chartSize / 2)} `;
+      return `${accumulator}${this.polarToX(currVal.angle, chartSize / 2)},${this.polarToY(currVal.angle, chartSize / 2)} `;
     }, '')
   }
 
@@ -96,10 +92,41 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
     const coordinates = this.getCoordinatesUnity()
     const middleOfChart = (chartSize / 2).toFixed(4);
     return (
-      <Fragment>
-        <polygon fill="red" stroke="black" transform={`translate(${middleOfChart},${middleOfChart})`} points={coordinates} />
-      </Fragment>
+      <polygon fill="red" stroke="black" transform={`translate(${middleOfChart},${middleOfChart})`} points={coordinates} />
     )
+  }
+
+  points = (points:any) => {
+    return points
+      .map((point:any) => point[0].toFixed(4) + ',' + point[1].toFixed(4))
+      .join(' ');
+  };
+
+  axis = () => (col:any, i:any) => {
+    const { chartSize } = this.props;
+    return (
+      <polyline
+      key={`poly-axis-${i}`}
+      points={this.points([
+        [0, 0],
+        [this.polarToX(col.angle, chartSize / 2), this.polarToY(col.angle, chartSize / 2)]
+      ])}
+      stroke="#555"
+      strokeWidth="1"
+    />
+    )
+  };
+
+  renderAxis = () => {
+    const { data } = this.props;
+    const captions = Object.keys(data[0]);
+    const columns = captions.map((key, i, all) => {
+      return {
+        key,
+        angle: (Math.PI * 2 * i) / all.length
+      };
+    });
+    return columns.map(this.axis());
   }
 
   render() {
@@ -115,6 +142,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
         {this.renderPoligon()}
         <g transform={`translate(${middleOfChart},${middleOfChart})`}>
           {this.renderShapes()}
+          {this.renderAxis()}
         </g>
       </svg>
     );
