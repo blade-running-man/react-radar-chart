@@ -1,13 +1,15 @@
 import React, { Component, Fragment } from "react";
 
 
-
+type Data = {
+  datasets: Array<any>,
+  labels: Array<any>
+}
 interface ChartRadarProps {
-  chartSize: number,
-  captionMargin: number,
-  numberOfScales: number,
-  headers: Array<string>
-  data: Array<any>
+  chartSize: number;
+  captionMargin: number;
+  numberOfScales: number;
+  data: Data;
 };
 
 export default class ChartRadar extends Component<ChartRadarProps, any> {
@@ -16,8 +18,10 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
     chartSize: 300,
     captionMargin: 10,
     numberOfScales: 4,
-    headers: [],
-    data: [],
+    data: {
+      datasets: [],
+      labels: [],
+    },
   };
 
   setViewBox = () => {
@@ -39,13 +43,12 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
 
   shape = (columns:any) => (chartData: any, i: any) => {
     const { chartSize } = this.props;
-    const data = chartData;
     return (
       <path
         key={`shape-${i}`}
         d={this.pathDefinition(
           columns.map((col:any) => {
-            const value = data[col.key];
+            const value = chartData.data[col.key];
             return [
               this.polarToX(col.angle, (value * chartSize) / 2),
               this.polarToY(col.angle, (value * chartSize) / 2)
@@ -60,12 +63,12 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   };
 
   getCoordinatesUnity = () => {
-    const { chartSize, headers } = this.props;
+    const { chartSize, data: { labels } } = this.props;
 
-    const captionsData = headers.map((key: any, i:any, all:any) => {
+    const captionsData = labels.map((key: any, i:any, all:any) => {
       return {
         key: i,
-        caption: headers[i],
+        caption: labels[i],
         angle: (Math.PI * 2 * i) / all.length
       };
     })
@@ -76,15 +79,15 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   }
 
   renderShapes = () => {
-    const { data } = this.props;
-    const captions = Object.keys(data[0]);
-    const columns = captions.map((key, i, all) => {
+    const { data: { datasets } } = this.props;
+    const captions = datasets[0].data;
+    const columns = captions.map((key:any, i:any, all:any) => {
       return {
-        key,
+        key: i,
         angle: (Math.PI * 2 * i) / all.length
       };
     });
-    return data.map(this.shape(columns))
+    return datasets.map(this.shape(columns))
   }
 
   renderPoligon = () => {
@@ -118,11 +121,11 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   };
 
   renderAxis = () => {
-    const { data } = this.props;
-    const captions = Object.keys(data[0]);
+    const { data: { datasets } } = this.props;
+    const captions = Object.keys(datasets[0].data);
     const columns = captions.map((key, i, all) => {
       return {
-        key,
+        key: i,
         angle: (Math.PI * 2 * i) / all.length
       };
     });
