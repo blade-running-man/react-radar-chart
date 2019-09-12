@@ -132,6 +132,34 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
     return columns.map(this.axis());
   }
 
+  caption = () => (col:any) => {
+    const {chartSize} = this.props;
+    return (
+      <text
+        key={`caption-of-${col.key}`}
+        x={this.polarToX(col.angle, (chartSize / 2) * 0.95).toFixed(4)}
+        y={this.polarToY(col.angle, (chartSize / 2) * 0.95).toFixed(4)}
+        dy={10 / 2}
+        fill="#444"
+        fontWeight="400"
+      >
+        {col.key}
+      </text>
+    )
+  }
+
+  renderCaption = () => {
+    const { data: { labels } } = this.props;
+    const columns = labels.map((key, i, all) => {
+      return {
+        key,
+        angle: (Math.PI * 2 * i) / all.length
+      };
+    });
+    console.log('columns', columns)
+    return columns.map(this.caption());
+  }
+
   render() {
     const { chartSize, data } = this.props;
     const middleOfChart = (chartSize / 2).toFixed(4);
@@ -146,6 +174,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
         <g transform={`translate(${middleOfChart},${middleOfChart})`}>
           {this.renderShapes()}
           {this.renderAxis()}
+          {this.renderCaption()}
         </g>
       </svg>
     );
