@@ -1,9 +1,15 @@
 import React, { Component, Fragment } from "react";
 
-
+type Dataset = {
+  label: string,
+  data: Array<number>,
+  backgroundColor: string,
+  borderColor: string,
+  borderWidth: number,
+}
 type Data = {
-  datasets: Array<any>,
-  labels: Array<any>
+  datasets: Array<Dataset>,
+  labels: Array<string>,
 }
 interface ChartRadarProps {
   chartSize: number;
@@ -43,6 +49,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
 
   shape = (columns:any) => (chartData: any, i: any) => {
     const { chartSize } = this.props;
+    console.log('chartData!!!', chartData);
     return (
       <path
         key={`shape-${i}`}
@@ -55,9 +62,9 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
             ];
           })
         )}
-        stroke={`#edc951`}
-        fill={`#edc951`}
-        fillOpacity=".5"
+        stroke={chartData.borderColor}
+        stroke-width={chartData.borderWidth}
+        fill={chartData.backgroundColor}
       />
     );
   };
@@ -84,7 +91,9 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
     const columns = captions.map((key:any, i:any, all:any) => {
       return {
         key: i,
-        angle: (Math.PI * 2 * i) / all.length
+        angle: (Math.PI * 2 * i) / all.length,
+        backgroundColor: i.backgroundColor,
+        borderColor: i.borderColor,
       };
     });
     return datasets.map(this.shape(columns))
