@@ -50,6 +50,14 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
         pointBackgroundColor: PropTypes.string,
         pointBorderColor: PropTypes.string,
       })),
+      labels: (props: ChartRadarProps, propName: string, componentName: string) => {
+        if (props.labels.length < 3) {
+          throw new Error(
+            `${propName} prop must be an array of at least 3 elements in ${componentName}.`
+          );
+        }
+        return null
+      },
     })
 
 }
@@ -189,7 +197,6 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
         angle: (Math.PI * 2 * i) / all.length
       };
     });
-    console.log('columns', columns)
     return columns.map(this.caption());
   }
 
