@@ -25,6 +25,7 @@
     "awesome-typescript-loader": "^5.2.1",
     "babel-loader": "^8.0.6",
     "pre-commit": "^1.2.2",
+    "prop-types": "^15.7.2",
     "react-docgen-typescript-loader": "^3.2.0",
     "react-docgen-typescript-webpack-plugin": "^1.1.0",
     "storybook-readme": "^5.0.8",

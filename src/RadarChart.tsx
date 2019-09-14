@@ -1,37 +1,61 @@
 import React, { Component, Fragment } from "react";
+import * as PropTypes from 'prop-types';
 
 type Dataset = {
-  label: string,
+  backgroundColor?: string,
+  borderColor?: string,
+  borderWidth?: number,
   data: Array<number>,
-  backgroundColor: string,
-  borderColor: string,
-  borderWidth: number,
+  label?: string,
+  pointRadius?: number,
+  pointBorderWidth?: number,
+  pointBackgroundColor?: string,
+  pointBorderColor?: string,
 }
 type Data = {
+  captionMargin: number,
+  chartSize: number,
   datasets: Array<Dataset>,
   labels: Array<string>,
+  numberOfScales: number,
 }
 interface ChartRadarProps {
-  chartSize: number;
-  captionMargin: number;
-  numberOfScales: number;
   data: Data;
 };
 
 export default class ChartRadar extends Component<ChartRadarProps, any> {
 
   public static defaultProps = {
-    chartSize: 300,
-    captionMargin: 10,
-    numberOfScales: 4,
     data: {
+      captionMargin: 10,
+      chartSize: 300,
       datasets: [],
       labels: [],
+      numberOfScales: 4,
     },
   };
 
+  public static propTypes = {
+    data: PropTypes.shape({
+      captionMargin: PropTypes.number,
+      chartSize: PropTypes.number,
+      datasets: PropTypes.arrayOf(PropTypes.shape({
+        backgroundColor: PropTypes.string,
+        borderColor: PropTypes.string,
+        borderWidth: PropTypes.number,
+        data: PropTypes.arrayOf(PropTypes.number),
+        label: PropTypes.string,
+        pointRadius: PropTypes.number,
+        pointBorderWidth: PropTypes.number,
+        pointBackgroundColor: PropTypes.string,
+        pointBorderColor: PropTypes.string,
+      })),
+    })
+
+}
+
   setViewBox = () => {
-    const { chartSize, captionMargin } = this.props;
+    const { data: {chartSize, captionMargin} } = this.props;
     return `-${captionMargin} 0 ${chartSize + captionMargin * 2} ${chartSize}`;
   };
 
@@ -48,8 +72,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   };
 
   shape = (columns:any) => (chartData: any, i: any) => {
-    const { chartSize } = this.props;
-    console.log('chartData!!!', chartData);
+    const { data: { chartSize }} = this.props;
     return (
       <path
         key={`shape-${i}`}
@@ -63,6 +86,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
           })
         )}
         stroke={chartData.borderColor}
+        stroke-linejoin="round"
         stroke-width={chartData.borderWidth}
         fill={chartData.backgroundColor}
       />
@@ -70,7 +94,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   };
 
   getCoordinatesUnity = () => {
-    const { chartSize, data: { labels } } = this.props;
+    const { data: { chartSize, labels } } = this.props;
 
     const captionsData = labels.map((key: any, i:any, all:any) => {
       return {
@@ -100,7 +124,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   }
 
   renderPoligon = () => {
-    const { chartSize } = this.props;
+    const { data: { chartSize } } = this.props;
     const coordinates = this.getCoordinatesUnity()
     const middleOfChart = (chartSize / 2).toFixed(4);
     return (
@@ -115,7 +139,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   };
 
   axis = () => (col:any, i:any) => {
-    const { chartSize } = this.props;
+    const { data: { chartSize } } = this.props;
     return (
       <polyline
       key={`poly-axis-${i}`}
@@ -142,7 +166,7 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   }
 
   caption = () => (col:any) => {
-    const {chartSize} = this.props;
+    const { data: {chartSize} } = this.props;
     return (
       <text
         key={`caption-of-${col.key}`}
@@ -170,22 +194,24 @@ export default class ChartRadar extends Component<ChartRadarProps, any> {
   }
 
   render() {
-    const { chartSize, data } = this.props;
+    const { data: { chartSize } } = this.props;
     const middleOfChart = (chartSize / 2).toFixed(4);
     return (
-      <svg 
-        version="1"
-        xmlns="http://www.w3.org/2000/svg"
-        viewBox={this.setViewBox()} 
-        width={chartSize}
-        height={chartSize}>
-        {this.renderPoligon()}
-        <g transform={`translate(${middleOfChart},${middleOfChart})`}>
-          {this.renderShapes()}
-          {this.renderAxis()}
-          {this.renderCaption()}
-        </g>
-      </svg>
+      <div>
+        <svg 
+          version="1"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox={this.setViewBox()} 
+          width={chartSize}
+          height={chartSize}>
+          {this.renderPoligon()}
+          <g transform={`translate(${middleOfChart},${middleOfChart})`}>
+            {this.renderShapes()}
+            {this.renderAxis()}
+            {this.renderCaption()}
+          </g>
+        </svg>
+      </div>
     );
   }
 }

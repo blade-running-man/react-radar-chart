@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { storiesOf } from '@storybook/react';
-import { withKnobs, object, array } from '@storybook/addon-knobs';
+import { withKnobs, object } from '@storybook/addon-knobs';
 import RadarChart from "./RadarChart";
 
 const stories = storiesOf('RadarChart', module);
 
-const data = {
+const exampleData = {
+  chartSize: 500,
+  captionMargin: 20,
   datasets: [
     {
       label: 'Messi',
@@ -16,11 +18,14 @@ const data = {
     },
   ],
   labels: ['PAC', 'SHO', 'PAS', 'DRI', 'DEF', 'PHY'],
+  numberOfScales: 4,
 }
+
+
 
 stories.addDecorator(withKnobs);
 
 storiesOf('RadarChart', module)
   .add('Base chart', () => (
-    <RadarChart chartSize={500} captionMargin={20} data={data} />
+    <RadarChart data={object('data', exampleData)} />
   ));
